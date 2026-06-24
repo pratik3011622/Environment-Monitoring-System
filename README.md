@@ -1,68 +1,189 @@
+# 🌿 Smart Environmental Monitoring System using STM32
+
+> Real-time monitoring of air quality, temperature & humidity using embedded technology.
+
+---
+
+## 👥 Team
+
+| Name | Roll No |
+|------|---------|
+| Pratik Ranjan | 24EC034 |
+| Priyanshu Verma | 24EC036 |
+| Vidhan Jain | 24EC045 |
+| Avi Sinha | 24EC106 |
+| Nilendu Das | 24EC110 |
+
+---
+
+## 📖 About the Project
+
+Air pollution is one of the most serious environmental issues affecting human health worldwide. Harmful gases like **CO**, **CH₄**, and **LPG** can cause severe health hazards when present beyond safe limits. At the same time, temperature and humidity play a significant role in human comfort and industrial processes.
+
+This project implements a **smart, low-cost environmental monitoring system** that continuously tracks air quality and environmental parameters, providing real-time data using sensors interfaced with an STM32 microcontroller.
+
+---
+
+## ⚙️ System Overview
+
+```
+MQ9 Gas Sensor ──► STM32 MCU ──► LCD Display
+DHT11 Sensor   ──►     │
+                        └──► Real-time Output
+```
+
+| Stage | Description |
+|-------|-------------|
+| **Gas Detection** | MQ9 detects CO, CH₄ & LPG via resistance change; ADC reads analog output |
+| **Env. Sensing** | DHT11 measures temperature (0–50°C) & humidity (20–90% RH) digitally |
+| **Processing** | STM32 processes sensor inputs, runs conversion logic and formats output |
+| **Display** | 16×2 LCD (I2C) shows real-time sensor values in a human-readable format |
+
+---
+
+## 🛠️ Hardware Components
+
+### Core Components
+
+| Component | Description |
+|-----------|-------------|
+| **STM32F103RB** | 32-bit ARM Cortex-M3 MCU @ 72 MHz |
+| **MQ9 Gas Sensor** | Detects CO, CH₄, LPG (analog output) |
+| **DHT11 Sensor** | Temperature (0–50°C) & Humidity (20–90% RH) |
+| **16×2 LCD (I2C)** | Real-time data display via I2C bus |
+
+### Supporting Parts
+
+- 10kΩ pull-up resistor (for DHT11)
+- Breadboard for prototyping
+- Jumper wires
+- 5V USB / regulated power supply
+
+---
+
+## 🔌 Pin Configuration
+
+| Pin | Connected To |
+|-----|-------------|
+| PA0 | MQ9 Analog Input |
+| PA1 | DHT11 Digital Input |
+| PB6 | I2C SCL (LCD) |
+| PB7 | I2C SDA (LCD) |
+
+---
+
+## 🧠 STM32 Microcontroller Specs
+
+| Parameter | Value |
+|-----------|-------|
+| Architecture | 32-bit ARM Cortex-M3 |
+| Clock Speed | Up to 72 MHz |
+| Flash Memory | 128 KB |
+| SRAM | 20 KB |
+| Package | STM32F103RB |
+
+### Key Functional Units
+
+- **ADC** — Converts analog MQ9 signal to digital values
+- **GPIO** — Handles single-wire DHT11 digital communication
+- **I2C** — Communicates with the 16×2 LCD display module
+- **Timers** — Manages sensor polling intervals and delays
+
+---
+
+## 🔬 Sensor Details
+
+### MQ9 Gas Sensor
+
+Detects: **Carbon Monoxide (CO)**, **Methane (CH₄)**, **LPG (C₃H₈)**
+
+**Working Principle:**
+1. SnO₂ (tin dioxide) forms the active sensing layer
+2. Gas concentration alters the electrical resistance of the sensing material
+3. A variable voltage proportional to gas concentration is produced at the output
+4. STM32 ADC reads this analog voltage and converts it to a digital value
+
+> ⚠️ **Note:** The MQ9 requires preheating for stable readings and periodic calibration for accurate concentration values.
+
+---
+
+### DHT11 Sensor
+
+| Parameter | Value |
+|-----------|-------|
+| Temperature Range | 0°C – 50°C |
+| Humidity Range | 20% – 90% RH |
+| Calibration | Factory calibrated |
+| Protocol | Single-wire digital communication |
+| Data Output | 40-bit digital data frame |
+
+**Data Frame Structure:**  
+`8-bit Humidity` + `8-bit Decimal` + `8-bit Temperature` + `8-bit Decimal` + `8-bit Checksum`
+
+---
+
+## 🔄 Working Principle
+
+```
+1. Power On → Initialize sensors & LCD
+2. Gas Detection → MQ9 detects gas via resistance change
+3. ADC Conversion → STM32 converts analog MQ9 signal to digital
+4. Temp/Humidity → DHT11 sends 40-bit data over single wire
+5. Processing → STM32 processes and formats all sensor data
+6. LCD Output → Data displayed on 16×2 I2C LCD
+7. Loop → Entire cycle repeats continuously
+```
+
+---
+
+## 💻 Software Design
+
+The firmware handles four key tasks:
+
+| Task | Description |
+|------|-------------|
+| **ADC Reading** | Reads analog voltage from MQ9, converts to gas concentration |
+| **DHT11 Protocol** | Implements 1-wire protocol to receive 40-bit sensor data |
+| **Data Conversion** | Applies formulas to convert raw ADC/DHT values to meaningful units |
+| **LCD Interface** | Formats and writes sensor data to I2C LCD |
 
 
-INTRODUCTION
-Air pollution is a critical environmental issue that significantly impacts human health and global ecosystems. Harmful gases like Carbon Monoxide (CO), Methane (CH4), and Liquefied Petroleum Gas (LPG) can pose severe health hazards if they exceed safe limits. Additionally, temperature and humidity play a crucial role in human comfort, climate conditions, and industrial processes.
+---
 
-This project is a smart monitoring system designed to continuously track air quality and environmental parameters, providing real-time data to users via sensors and an STM32 microcontroller.
+## ✅ Advantages & ❌ Limitations
 
-TEAM MEMBERS
-• Pratik Ranjan (24EC034)
-• Nilendu Das (24EC110)
-• Avi Sinha (24EC106)
-• Vidhan Jain (24EC045)
-• Priyanshu Verma (24EC036)
+| ✅ Advantages | ❌ Limitations |
+|--------------|----------------|
+| Real-time environmental monitoring | MQ9 requires periodic calibration |
+| Low-cost and easy to build | DHT11 has limited accuracy range |
+| Portable and compact design | No buzzer/alert in the base design |
+| Multi-parameter sensing in one device | Not suitable for high-precision industrial use |
 
-OBJECTIVES
-• Develop a real-time environmental monitoring system.
-• Detect harmful gases using dedicated gas sensors.
-• Measure temperature and humidity accurately.
-• Display data clearly for user awareness and early hazard detection.
+---
 
-HARDWARE COMPONENTS
-• STM32F103RB Microcontroller: Core processing unit (32-bit ARM Cortex-M3 running up to 72 MHz).
-• MQ9 Gas Sensor: Detects CO, CH4, and LPG via resistance changes. Outputs an analog voltage proportional to gas concentration.
-• DHT11 Sensor: Measures ambient temperature (0 to 50°C) and relative humidity (20 to 90% RH) via a single-wire digital protocol.
-• 16x2 LCD Display (I2C): Displays real-time sensor values. The I2C module reduces wiring to just two communication lines.
-• Supporting Parts: 10kΩ pull-up resistor, breadboard, jumper wires, and 5V power supply.
+## 🌍 Applications
 
-PIN CONFIGURATION
-• PA0: MQ9 Analog Input
-• PA1: DHT11 Digital Input
-• PB6: I2C SCL (LCD Display)
-• PB7: I2C SDA (LCD Display)
+- **Indoor Air Quality** — Monitor homes, classrooms, and offices for CO & pollutants
+- **Industrial Safety** — Detect gas leaks in factories and chemical processing plants
+- **Smart Buildings** — Integrate with HVAC systems for automated environmental control
+- **Environmental Stations** — Deploy in outdoor monitoring stations for city-wide data
 
-WORKING PRINCIPLE
+---
 
-1) Initialization: The system initializes the sensors and the LCD display on power-up.
+## 🚀 Future Scope
 
-2) Data Acquisition: The MQ9 sensor detects gas concentration and outputs a proportional analog voltage. The DHT11 sensor transmits a 40-bit digital data frame over a single wire.
+- [ ] Add buzzer/alert system for gas leakage detection
+- [ ] Wi-Fi / IoT integration for remote monitoring
+- [ ] Cloud storage and real-time analytics dashboard
+- [ ] Upgrade to MQ135 / DHT22 for higher accuracy
+- [ ] Battery-powered portable standalone version
 
-3) Processing: The STM32 microcontroller's internal ADC converts the analog signal from the MQ9 into digital values, while handling the digital communication from the DHT11.
+> This project can evolve into a **fully automated smart IoT-based environmental safety system**.
 
-4) Display: The MCU formats all sensor data and writes it to the 16x2 I2C LCD for real-time visualization.
 
-5) Continuous Polling: The system loops continuously, managing sensor polling intervals and updating the display.
 
-ADVANTAGES
-• Provides continuous, real-time environmental monitoring.
-• Features multi-parameter sensing in a single device.
-• Low-cost, portable, and modular design.
 
-LIMITATIONS
-• MQ9 sensor requires periodic calibration.
-• DHT11 sensor has a limited accuracy range, unsuitable for high-precision industrial use.
-• The base design currently lacks an audible buzzer or alert mechanism.
 
-APPLICATIONS
-• Indoor Air Quality: Monitoring homes, classrooms, and offices for pollutants.
-• Industrial Safety: Early detection of hazardous gas leaks in factories.
+---
 
-FUTURE UPGRADES
-• Integrating with HVAC units for automated building controls.
-• Adding an alert buzzer for immediate hazard notifications.
-• Upgrading to more precise sensors like the MQ135 or DHT22.
-• Adding Wi-Fi/IoT connectivity for cloud storage and remote monitoring.
-• Developing a standalone, battery-powered portable unit.
-
-CONCLUSION
-This project successfully implements a smart, cost-effective, and scalable environmental monitoring system using an STM32 microcontroller. By providing reliable, real-time data on gas concentration, temperature, and humidity, the system keeps users informed and aids in accident prevention.
+*"Prevention is better than cure — early detection saves lives."*
